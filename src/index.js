@@ -1,17 +1,36 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
+import reactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import store from './redux/store';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TasksColumn from './components/TasksColumn';
+import ProgressColumn from './components/ProgressColumn';
+import FinishedColumn from './components/FinishedColumn';
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+// persisting the store
+let persistor = persistStore(store);
+
+reactDOM.render(
+  <Provider store={store}>
+
+    {/* providing the persisted state through the persistgate component */}
+    <PersistGate loading={null} persistor={persistor}>
+
+      {/* react router routes through the browserrouter component */}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />}>
+            <Route index element={<TasksColumn />} />
+            <Route path="tasksColumn" element={<TasksColumn />} />
+            <Route path="progressColumn" element={<ProgressColumn />} />
+            <Route path="finishedColumn" element={<FinishedColumn />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </PersistGate>
+  </Provider>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
